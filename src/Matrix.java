@@ -34,6 +34,8 @@ public class Matrix  {
      */
 
     public void newGame() {
+        String letter = null;
+        int number = 0;
         // Clear the map
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLS; col++) {
@@ -41,7 +43,7 @@ public class Matrix  {
             }
         }
         // Get a new random shape
-        shape = Shape.newShape();
+        shape = Shape.newShape(letter, number);
     }
 
     /**
@@ -107,6 +109,48 @@ public class Matrix  {
         return true;
     }
 
+    private void addShapeToMatrix(Shape shape){
+        int leftMostIndex = shape.leftMostIndex;
+        for (int shapeRow = 0; shapeRow < shape.maxRows; shapeRow++) {
+            // Check for the first occupied row along the column corresponding
+            // to the leftmost index of the shape
+            // in order to find the shape's place in the matrix
+            if (this.map[shapeRow][leftMostIndex]) {
+                addShapeToMatrixHelper(shape, shapeRow, leftMostIndex);
+            }
+        }
+    }
+
+    private void addShapeToMatrixHelper(Shape shape,int orignalRow, int originCol){
+        switch (shape.shapeType) {
+            case Shape.ShapeType.Z:
+                this.map[orignalRow][originCol + 1] = true;
+                this.map[orignalRow][originCol + 2] = true;
+                this.map[orignalRow-1][originCol] = true;
+                this.map[orignalRow-1][originCol + 1] = true;
+                break;
+
+            case Shape.ShapeType.S:
+                this.map[orignalRow-1][originCol] = true;
+                this.map[orignalRow-1][originCol + 1] = true;
+                this.map[orignalRow-2][originCol+1] = true;
+                this.map[orignalRow-2][originCol+2] = true;
+                break;
+
+            case "Q":  shape.shapeType = Shape.ShapeType.Q;
+                break;
+            case "I":  shape.shapeType = Shape.ShapeType.I;
+                break;
+            case "L":  shape.shapeType = Shape.ShapeType.L;
+                break;
+            case "J":  shape.shapeType = Shape.ShapeType.J;
+                break;
+            case "T": shape.shapeType = Shape.ShapeType.T;
+                break;
+        }
+
+    }
+
     /**
      * Lock down the block, by transfer the block's content to the matrix.
      * Also clear filled lines, if any.
@@ -116,8 +160,8 @@ public class Matrix  {
     public int lockDown() {
         // Block at bottom, lock down by transferring the block's content
         //  to the matrix
-        for (int shapeRow = 0; shapeRow < shape.rows; shapeRow++) {
-            for (int shapeCol = 0; shapeCol < shape.cols; shapeCol++) {
+        for (int shapeRow = 0; shapeRow < shape.maxRows; shapeRow++) {
+            for (int shapeCol = 0; shapeCol < shape.maxCols; shapeCol++) {
                 if (shape.map[shapeRow][shapeCol]) {
                     this.map[shapeRow + shape.y][shapeCol + shape.x] = true;
                 }
@@ -178,16 +222,16 @@ public class Matrix  {
      * @param g - the drawing Graphics object
      */
     public void paint(Graphics g) {
-        int yOffet = 1;   // apply a small y offset for nicer display?!
-        for (int row = 0; row < ROWS; row++) {
-            for (int col = 0; col < COLS; col++) {
-                g.setColor(map[row][col] ? COLOR_OCCUPIED : COLOR_EMPTY);
-                g.fill3DRect(col*CELL_SIZE, row*CELL_SIZE+yOffet,
-                        CELL_SIZE, CELL_SIZE, true);
-            }
-        }
-
-        // Also paint the Shape encapsulated
-        shape.paint(g);
+//        int yOffet = 1;   // apply a small y offset for nicer display?!
+//        for (int row = 0; row < ROWS; row++) {
+//            for (int col = 0; col < COLS; col++) {
+//                g.setColor(map[row][col] ? COLOR_OCCUPIED : COLOR_EMPTY);
+//                g.fill3DRect(col*CELL_SIZE, row*CELL_SIZE+yOffet,
+//                        CELL_SIZE, CELL_SIZE, true);
+//            }
+//        }
+//
+//        // Also paint the Shape encapsulated
+//        shape.paint(g);
     }
 }

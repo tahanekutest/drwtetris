@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import static javax.swing.UIManager.put;
-
 /**
  * The Shape class models the falling blocks (or Tetrimino) in the Tetris game.
  * This class uses the "Singleton" design pattern. To get a new (random) shape,
@@ -14,6 +12,12 @@ import static javax.swing.UIManager.put;
  * A Shape is defined and encapsulated inside the Matrix class.
  */
 public class Shape {
+
+
+    public enum ShapeType {
+        Z, S, Q, I,L,
+        J, T
+    }
     // == Define named constants ==
     /** The width and height of a cell of the Shape (in pixels) */
     public final static int CELL_SIZE = 32;
@@ -30,13 +34,15 @@ public class Shape {
     //   top-left corner at the (x, y) of the Matrix.
     // All variables are "package" visible
 
+    ShapeType shapeType;
+    int leftMostIndex;
     // Property 1: Top-left corner (x, y) of this Shape on the Matrix
     int x, y;
     // Property 2: Occupancy map
     boolean[][] map;
     // Property 3: The rows and columns for this Shape. Although they can be obtained
     //  from map[][], they are defined here for efficiency.
-    int rows, cols;
+    int maxRows, maxCols;
     // Property 4: Array index for colors and maps
     int shapeIdx;
     // For ease of undo rotation, the original map is saved here.
@@ -45,34 +51,34 @@ public class Shape {
     // All the possible shape maps
     // Use square array 3x3, 4x4, 5x5 to facilitate rotation computation.
 
-    private final boolean [][] Z = {{ false, true,  false },
-            { true,  true,  false },
-            { true,  false, false }};
-    private  final boolean [][] L =
-                     {{ false, true,  false},
-                   { false, true,  false},
+    private static final boolean [][] Z =
+            {{ true, true,  false },
+            { false,  true,  true },
+            { false,  false, false }};
+    private static final boolean [][] L =
+            {{ false, true,  false},
+                    { false, true,  false},
                  { false, true,  true }};
-    private final boolean [][] Q =    {{ true, true },
+    private static final boolean [][] Q =  {{ true, true },
                    { true, true }};
-    private final boolean [][] S =  {{ false, true,  false },
-                    { false, true,  true  },
-                    { false, false, true  }};
-    private final boolean [][] I =  {{ false, true,  false, false },
-                    { false, true,  false, false },
-                  { false, true,  false, false },
-                    { false, true,  false, false }};
+    private static final boolean [][] S =
+                    {{ false, true,  true },
+                    { true, true,  false },
+                    { false, false, false }};
+    private static final boolean [][] I =  {
+                    { true, true, true, true }};
 
-    private final boolean [][] J =
+    private static final boolean [][] J =
                 {{ false, true,  false},
                     { false, true,  false},
                     { true,  true,  false}};
 
-    private final boolean [][] T =
+    private static final boolean [][] T =
                         {{ false, true,  false },
                     { true,  true,  true  },
                     { false, false, false }};
 
-    private Map<String,boolean[][]> SHAPES_MAP = new HashMap<String, boolean[][]>(){
+    private static Map<String,boolean[][]> SHAPES_MAP = new HashMap<String, boolean[][]>(){
         {
             put("Q", Q);
             put("Z", Z);
@@ -105,36 +111,37 @@ public class Shape {
      *
      * @return the singleton instance
      */
-    public static Shape newShape() {
+    public static Shape newShape(String letter, int number) {
         // Create object if it's not already created
         if(shape == null) {
             shape = new Shape();
         }
 
-        // Initialize a new "random" shape by position at the top row, centered.
-        // Update x, y, shapeIdx, map, rows and cols.
-        // Choose a pattern randomly
-        shape.shapeIdx = rand.nextInt(SHAPES_MAP.length);
         // Set this shape's pattern. No need to copy the contents
-        shape.map = SHAPES_MAP[shape.shapeIdx];
-        shape.rows = shape.map.length;
-        shape.cols = shape.map[0].length;
+        shape.map = SHAPES_MAP.get(letter);
+        shape.maxRows = shape.map.length;
+        shape.maxCols = shape.map[0].length;
+        shape.leftMostIndex = number;
 
-        // Set this shape initial (x, y) at the top row, centered.
-        shape.x = ((Matrix.COLS - shape.cols) / 2);
+        switch (letter) {
+            case "Z":
+                shape.shapeType = ShapeType.Z;
+                break;
 
-        // Find the initial y position. Need to handle rotated L and J
-        //  with empty top rows, i.e., initial y can be 0, -1, -2,...
-        outerloop:
-        for (int row = 0; row < shape.rows; row++) {
-            for (int col = 0; col < shape.cols; col++) {
-                // Ignore empty rows, by checking the row number
-                //   of the first occupied square
-                if (shape.map[row][col]) {
-                    shape.y = -row;
-                    break outerloop;
-                }
-            }
+            case "S":
+                shape.shapeType = ShapeType.S;
+                break;
+
+            case "Q":  shape.shapeType = ShapeType.Q;
+                break;
+            case "I":  shape.shapeType = ShapeType.I;
+                break;
+            case "L":  shape.shapeType = ShapeType.L;
+                break;
+            case "J":  shape.shapeType = ShapeType.J;
+                break;
+            case "T": shape.shapeType = ShapeType.T;
+                break;
         }
 
         return shape;  // return the singleton object
