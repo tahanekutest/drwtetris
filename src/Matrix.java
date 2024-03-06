@@ -32,7 +32,7 @@ public class Matrix  {
      * Reset the matrix for a new game, by reseting all the properties.
      * Clear map[][] and get a new random Shape.
      */
-    @Override
+
     public void newGame() {
         // Clear the map
         for (int row = 0; row < ROWS; row++) {
@@ -49,40 +49,40 @@ public class Matrix  {
      * @return true if it is at the bottom and cannot move down further.
      *         Need to lock down this block.
      */
-    public boolean stepGame(Action action) {
-        switch (action) {
-            case LEFT:
-                shape.x--;  // try moving
-                if (!actionAllowed()) shape.x++;  // undo the move
-                break;
-            case RIGHT:
-                shape.x++;
-                if (!actionAllowed()) shape.x--;  // undo the move
-                break;
-            case ROTATE_LEFT:
-                shape.rotateLeft();
-                if (!actionAllowed()) shape.undoRotate();  // undo the move
-                break;
-            case ROTATE_RIGHT:
-                shape.rotateRight();
-                if (!actionAllowed()) shape.undoRotate();  // undo the move
-                break;
-            case HARD_DROP: // Handle as FAST "down" in GameMain class for better visual
-            case SOFT_DROP: // Handle as FAST "down" in GameMain class for better visual
-//          do {
-//             shape.y++;
-//          } while (moveAllowed());
-//          shape.y--;
-//          break;
-            case DOWN:
-                shape.y++;
-                if (!actionAllowed()) {
-                    // At bottom, cannot move down further. To lock down this block
-                    shape.y--;    // undo the move
-                    return true;
-                }
-                break;
-        }
+    public boolean stepGame() {
+//        switch (action) {
+//            case LEFT:
+//                shape.x--;  // try moving
+//                if (!actionAllowed()) shape.x++;  // undo the move
+//                break;
+//            case RIGHT:
+//                shape.x++;
+//                if (!actionAllowed()) shape.x--;  // undo the move
+//                break;
+//            case ROTATE_LEFT:
+//                shape.rotateLeft();
+//                if (!actionAllowed()) shape.undoRotate();  // undo the move
+//                break;
+//            case ROTATE_RIGHT:
+//                shape.rotateRight();
+//                if (!actionAllowed()) shape.undoRotate();  // undo the move
+//                break;
+//            case HARD_DROP: // Handle as FAST "down" in GameMain class for better visual
+//            case SOFT_DROP: // Handle as FAST "down" in GameMain class for better visual
+////          do {
+////             shape.y++;
+////          } while (moveAllowed());
+////          shape.y--;
+////          break;
+//            case DOWN:
+//                shape.y++;
+//                if (!actionAllowed()) {
+//                    // At bottom, cannot move down further. To lock down this block
+//                    shape.y--;    // undo the move
+//                    return true;
+//                }
+//                break;
+//        }
         return false;  // not reach the bottom
     }
 
@@ -92,18 +92,18 @@ public class Matrix  {
      * @return true if this move action is allowed
      */
     public boolean actionAllowed() {
-        for (int shapeRow = 0; shapeRow < shape.rows; shapeRow++) {
-            for (int shapeCol = 0; shapeCol < shape.cols; shapeCol++) {
-                int matrixRow = shapeRow + shape.y;
-                int matrixCol = shapeCol + shape.x;
-                if (shape.map[shapeRow][shapeCol]
-                        && (matrixRow < 0 || matrixRow >= Matrix.ROWS
-                        || matrixCol < 0 || matrixCol >= Matrix.COLS
-                        || this.map[matrixRow][matrixCol])) {
-                    return false;
-                }
-            }
-        }
+//        for (int shapeRow = 0; shapeRow < shape.rows; shapeRow++) {
+//            for (int shapeCol = 0; shapeCol < shape.cols; shapeCol++) {
+//                int matrixRow = shapeRow + shape.y;
+//                int matrixCol = shapeCol + shape.x;
+//                if (shape.map[shapeRow][shapeCol]
+//                        && (matrixRow < 0 || matrixRow >= Matrix.ROWS
+//                        || matrixCol < 0 || matrixCol >= Matrix.COLS
+//                        || this.map[matrixRow][matrixCol])) {
+//                    return false;
+//                }
+//            }
+//        }
         return true;
     }
 
