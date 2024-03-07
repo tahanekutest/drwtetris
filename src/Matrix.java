@@ -36,12 +36,12 @@ public class Matrix  {
     public void newGame() {
         String letter = null;
         int number = 0;
-        // Clear the map
-        for (int row = 0; row < ROWS; row++) {
-            for (int col = 0; col < COLS; col++) {
-                map[row][col] = false;  // empty
-            }
-        }
+//        // Clear the map
+//        for (int row = 0; row < ROWS; row++) {
+//            for (int col = 0; col < COLS; col++) {
+//                map[row][col] = false;  // empty
+//            }
+//        }
         // Get a new random shape
         shape = Shape.newShape(letter, number);
     }
@@ -110,13 +110,25 @@ public class Matrix  {
     }
 
     private void addShapeToMatrix(Shape shape){
+        boolean shouldStartFromTheBottom = false;
         int leftMostIndex = shape.leftMostIndex;
         for (int shapeRow = 0; shapeRow < shape.maxRows; shapeRow++) {
             // Check for the first occupied row along the column corresponding
             // to the leftmost index of the shape
             // in order to find the shape's place in the matrix
             if (this.map[shapeRow][leftMostIndex]) {
+                shouldStartFromTheBottom = true;
                 addShapeToMatrixHelper(shape, shapeRow, leftMostIndex);
+            }
+        }
+        if(!shouldStartFromTheBottom){
+            for (int shapeRow = 0; shapeRow < shape.maxRows; shapeRow++) {
+                for (int shapeCol = 0; shapeCol < shape.maxCols; shapeCol++) {
+                    int matrixCol = shapeCol + leftMostIndex;
+                    if (shape.map[shapeRow][shapeCol]) {
+                       this.map[shapeRow][matrixCol] = shape.map[shapeRow][shapeCol];
+                    }
+                }
             }
         }
     }
@@ -129,23 +141,41 @@ public class Matrix  {
                 this.map[orignalRow-1][originCol] = true;
                 this.map[orignalRow-1][originCol + 1] = true;
                 break;
-
             case Shape.ShapeType.S:
                 this.map[orignalRow-1][originCol] = true;
                 this.map[orignalRow-1][originCol + 1] = true;
                 this.map[orignalRow-2][originCol+1] = true;
                 this.map[orignalRow-2][originCol+2] = true;
                 break;
-
-            case "Q":  shape.shapeType = Shape.ShapeType.Q;
+            case Shape.ShapeType.Q:
+                this.map[orignalRow-1][originCol] = true;
+                this.map[orignalRow-2][originCol] = true;
+                this.map[orignalRow-1][originCol+1] = true;
+                this.map[orignalRow-2][originCol+1] = true;
                 break;
-            case "I":  shape.shapeType = Shape.ShapeType.I;
+            case Shape.ShapeType.I:
+                this.map[orignalRow-1][originCol] = true;
+                this.map[orignalRow-1][originCol+1] = true;
+                this.map[orignalRow-1][originCol+2] = true;
+                this.map[orignalRow-1][originCol+3] = true;
                 break;
-            case "L":  shape.shapeType = Shape.ShapeType.L;
+            case Shape.ShapeType.L:
+                this.map[orignalRow-1][originCol] = true;
+                this.map[orignalRow-2][originCol] = true;
+                this.map[orignalRow-3][originCol] = true;
+                this.map[orignalRow-1][originCol+1] = true;
                 break;
-            case "J":  shape.shapeType = Shape.ShapeType.J;
+            case Shape.ShapeType.J:
+                this.map[orignalRow-1][originCol] = true;
+                this.map[orignalRow-1][originCol+1] = true;
+                this.map[orignalRow-2][originCol+1] = true;
+                this.map[orignalRow-3][originCol+1] = true;
                 break;
-            case "T": shape.shapeType = Shape.ShapeType.T;
+            case Shape.ShapeType.T:
+                this.map[orignalRow-1][originCol] = true;
+                this.map[orignalRow-1][originCol+1] = true;
+                this.map[orignalRow-1][originCol+2] = true;
+                this.map[orignalRow][originCol+1] = true;
                 break;
         }
 

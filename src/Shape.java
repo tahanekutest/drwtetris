@@ -59,7 +59,8 @@ public class Shape {
             {{ false, true,  false},
                     { false, true,  false},
                  { false, true,  true }};
-    private static final boolean [][] Q =  {{ true, true },
+    private static final boolean [][] Q =
+                  {{ true, true },
                    { true, true }};
     private static final boolean [][] S =
                     {{ false, true,  true },
