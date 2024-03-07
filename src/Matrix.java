@@ -1,5 +1,10 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 /**
  * The Matrix class models the Tetris Game Board (called matrix)
@@ -36,15 +41,48 @@ public class Matrix  {
     public void newGame() {
         String letter = null;
         int number = 0;
-//        // Clear the map
-//        for (int row = 0; row < ROWS; row++) {
-//            for (int col = 0; col < COLS; col++) {
-//                map[row][col] = false;  // empty
-//            }
-//        }
+        try {
+            InputStream is = new FileInputStream("src/input.txt");
+            try (Scanner sc = new Scanner(
+                    is, StandardCharsets.UTF_8.name())) {
+
+                // It holds true till there is single element
+                // left in the object with usage of hasNext()
+                // method
+                while (sc.hasNextLine()) {
+                    processLine(sc.nextLine());
+                    clearMatrix();
+
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
         // Get a new random shape
-        shape = Shape.newShape(letter, number);
+
     }
+
+    private void clearMatrix(){
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
+                map[row][col] = false;  // empty
+            }
+        }
+    }
+    private void processLine(String line){
+        String[] tokens = line.split(",");
+        for(String token : tokens){
+            String letter = Character.toString(token.charAt(0));
+                String numberString = Character.toString(token.charAt(1));
+                int number = Integer.parseInt(numberString);
+                System.out.println("line "+line);
+                System.out.println("values "+letter+number);
+            addShapeToMatrix(Shape.newShape(letter, number));
+        }
+    }
+
 
     /**
      * The shape moves on the given action (left, right, down, rotate).
@@ -112,7 +150,7 @@ public class Matrix  {
     private void addShapeToMatrix(Shape shape){
         boolean shouldStartFromTheBottom = false;
         int leftMostIndex = shape.leftMostIndex;
-        for (int shapeRow = 0; shapeRow < shape.maxRows; shapeRow++) {
+        for (int shapeRow = shape.maxRows-1 ; shapeRow >=0; shapeRow--) {
             // Check for the first occupied row along the column corresponding
             // to the leftmost index of the shape
             // in order to find the shape's place in the matrix
@@ -138,43 +176,43 @@ public class Matrix  {
             case Shape.ShapeType.Z:
                 this.map[orignalRow][originCol + 1] = true;
                 this.map[orignalRow][originCol + 2] = true;
-                this.map[orignalRow-1][originCol] = true;
-                this.map[orignalRow-1][originCol + 1] = true;
+                this.map[orignalRow+1][originCol] = true;
+                this.map[orignalRow+1][originCol + 1] = true;
                 break;
             case Shape.ShapeType.S:
-                this.map[orignalRow-1][originCol] = true;
-                this.map[orignalRow-1][originCol + 1] = true;
-                this.map[orignalRow-2][originCol+1] = true;
-                this.map[orignalRow-2][originCol+2] = true;
+                this.map[orignalRow+1][originCol] = true;
+                this.map[orignalRow+1][originCol + 1] = true;
+                this.map[orignalRow+2][originCol+1] = true;
+                this.map[orignalRow+2][originCol+2] = true;
                 break;
             case Shape.ShapeType.Q:
-                this.map[orignalRow-1][originCol] = true;
-                this.map[orignalRow-2][originCol] = true;
-                this.map[orignalRow-1][originCol+1] = true;
-                this.map[orignalRow-2][originCol+1] = true;
+                this.map[orignalRow+1][originCol] = true;
+                this.map[orignalRow+2][originCol] = true;
+                this.map[orignalRow+1][originCol+1] = true;
+                this.map[orignalRow+2][originCol+1] = true;
                 break;
             case Shape.ShapeType.I:
-                this.map[orignalRow-1][originCol] = true;
-                this.map[orignalRow-1][originCol+1] = true;
-                this.map[orignalRow-1][originCol+2] = true;
-                this.map[orignalRow-1][originCol+3] = true;
+                this.map[orignalRow+1][originCol] = true;
+                this.map[orignalRow+1][originCol+1] = true;
+                this.map[orignalRow+1][originCol+2] = true;
+                this.map[orignalRow+1][originCol+3] = true;
                 break;
             case Shape.ShapeType.L:
-                this.map[orignalRow-1][originCol] = true;
-                this.map[orignalRow-2][originCol] = true;
-                this.map[orignalRow-3][originCol] = true;
-                this.map[orignalRow-1][originCol+1] = true;
+                this.map[orignalRow+1][originCol] = true;
+                this.map[orignalRow+2][originCol] = true;
+                this.map[orignalRow+3][originCol] = true;
+                this.map[orignalRow+1][originCol+1] = true;
                 break;
             case Shape.ShapeType.J:
-                this.map[orignalRow-1][originCol] = true;
-                this.map[orignalRow-1][originCol+1] = true;
-                this.map[orignalRow-2][originCol+1] = true;
-                this.map[orignalRow-3][originCol+1] = true;
+                this.map[orignalRow+1][originCol] = true;
+                this.map[orignalRow+1][originCol+1] = true;
+                this.map[orignalRow+2][originCol+1] = true;
+                this.map[orignalRow+3][originCol+1] = true;
                 break;
             case Shape.ShapeType.T:
-                this.map[orignalRow-1][originCol] = true;
-                this.map[orignalRow-1][originCol+1] = true;
-                this.map[orignalRow-1][originCol+2] = true;
+                this.map[orignalRow+1][originCol] = true;
+                this.map[orignalRow+1][originCol+1] = true;
+                this.map[orignalRow+1][originCol+2] = true;
                 this.map[orignalRow][originCol+1] = true;
                 break;
         }
